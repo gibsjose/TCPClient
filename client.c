@@ -54,6 +54,14 @@ int main(int argc, char *argv[]) {
     char remote_filepath[1024];
     fgets(remote_filepath, 1024, stdin);
 
+    //Remove the newline from the input
+    for(int i = 0; i < strlen(remote_filepath); i++) {
+        if(remote_filepath[i] == '\n') {
+            remote_filepath[i] = '\0';
+            break;
+        }
+    }
+
     // printf("Specify a local filepath: ");
     // char local_filepath[1024];
     // fgets(local_filepath, 2014, stdin);
@@ -81,7 +89,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    //printf("Received %d bytes from server: %s\n", n, (char *)response);
+    printf("Received %d bytes from server: %s\n", n, (char *)response);
 
     //Close the socket
     close(sockfd);
