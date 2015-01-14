@@ -6,14 +6,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <libgen.h>
 
 //Define the port and address
 #define PORT 8888
 #define ADDRESS "127.0.0.1"
 
+#define MAX_FILE_SIZE 1024
+
 int main(int argc, char *argv[]) {
 
-    FILE *file;
+    FILE *local_file;
 
     //Create a socket:
     //socket() system call creates a socket, returning a socket descriptor
@@ -46,20 +49,23 @@ int main(int argc, char *argv[]) {
 
     //Can now send/receive data over the socket...
 
-    //Ask for some text
+    //Ask for the remote/local file
     printf("Specify a remote filepath: ");
     char remote_filepath[1024];
+    fgets(remote_filepath, 1024, stdin);
 
-    fgets(filepath, 1024, stdin);
+    // printf("Specify a local filepath: ");
+    // char local_filepath[1024];
+    // fgets(local_filepath, 2014, stdin);
 
-    char response[1024];
+    char response[MAX_FILE_SIZE];
 
     //Send the data over the socket:
     //  socket descriptor
     //  data (const void *)
     //  size of the data
     //  optional settings
-    send(sockfd, filepath, strlen(s_line), 0);
+    send(sockfd, remote_filepath, strlen(remote_filepath), 0);
 
     //Receive data over the socket:
     //  socket descriptor
@@ -67,19 +73,35 @@ int main(int argc, char *argv[]) {
     //  MAX_BYTES
     //  optional settings
     //Returns the number of bytes received...
-    int n = recv(sockfd, r_line, 1024, 0);  //Receive is BLOCKING: Will wait for SOME data, but not necessarily until MAX_BYTES
+    int n = recv(sockfd, response, 1024, 0);  //Receive is BLOCKING: Will wait for SOME data, but not necessarily until MAX_BYTES
 
     if(n < 0) {
         //Server has potentially closed the connection (check for specific error value)
         printf("Error receiving bytes from server...\n");
         return -1;
-    } else if(n == 0) {
-        printf("No bytes were received from server...\n");
-    } else {
-        printf("Received %d bytes from server: %s\n", n, r_line);
     }
 
+    //printf("Received %d bytes from server: %s\n", n, (char *)response);
+
+    //Close the socket
     close(sockfd);
+
+    //Save the buffer to a file in the current directory
+    char remote_filename[1024];
+    char local_filepath[1024] = "./";
+
+    //Get the NAME of the remote file requested
+    strcpy(remote_filename, basename(remote_filepath));
+
+    //Form a local filepath with the remote file name
+    strcat(local_filepath, remote_filename);
+
+    printf("Successfully obtained remote file: %s\n", remote_filename);
+    printf("Saving locally to: %s\n", local_filepath);
+
+    //Write the local file
+    local_file = fopen(local_filepath, "wb");
+    fwrite(response, sizeof(char), MAX_FILE_SIZE, local_file);
 
     return 0;
 }
