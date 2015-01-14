@@ -108,5 +108,7 @@ int main(int argc, char *argv[]) {
     local_file = fopen(local_filepath, "wb");
     fwrite(response, sizeof(char), MAX_FILE_SIZE, local_file);
 
+    free(response);
+
     return 0;
 }
