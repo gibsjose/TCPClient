@@ -2,8 +2,10 @@
 
 #include <sys/socket.h> //Socket features
 #include <netinet/in.h> //Internet-specific features of sockets
+#include <arpa/inet.h>  //inet_addr()
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 //Define the port and address
 #define PORT 8888
