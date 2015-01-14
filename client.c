@@ -47,18 +47,19 @@ int main(int argc, char *argv[]) {
     //Can now send/receive data over the socket...
 
     //Ask for some text
-    printf("Enter a ");
+    printf("Specify a remote filepath: ");
+    char remote_filepath[1024];
 
-    char s_line[1024];
-    char r_line[1024];
-    fgets(s_line, 1024, stdin);
+    fgets(filepath, 1024, stdin);
+
+    char response[1024];
 
     //Send the data over the socket:
     //  socket descriptor
     //  data (const void *)
     //  size of the data
     //  optional settings
-    send(sockfd, s_line, strlen(s_line), 0);
+    send(sockfd, filepath, strlen(s_line), 0);
 
     //Receive data over the socket:
     //  socket descriptor
