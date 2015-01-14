@@ -12,7 +12,7 @@
 #define PORT 8888
 #define ADDRESS "127.0.0.1"
 
-#define MAX_FILE_SIZE 1024
+#define MAX_FILE_SIZE 1024 * 1024
 
 int main(int argc, char *argv[]) {
 
