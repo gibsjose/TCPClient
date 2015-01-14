@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
 
     //Write the local file
     local_file = fopen(local_filepath, "wb");
-    fwrite(response, sizeof(char), MAX_FILE_SIZE, local_file);
+    fwrite(response, sizeof(char), n, local_file);
 
     free(response);
 
