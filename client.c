@@ -5,6 +5,7 @@
 #include <arpa/inet.h>  //inet_addr()
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <libgen.h>
 
@@ -12,7 +13,7 @@
 #define PORT 8888
 #define ADDRESS "127.0.0.1"
 
-#define MAX_FILE_SIZE 1024 * 1024
+#define MAX_FILE_SIZE (50 * 1024 * 1024)
 
 int main(int argc, char *argv[]) {
 
@@ -62,11 +63,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // printf("Specify a local filepath: ");
-    // char local_filepath[1024];
-    // fgets(local_filepath, 2014, stdin);
-
-    char response[MAX_FILE_SIZE];
+    char * response = malloc(MAX_FILE_SIZE);
 
     //Send the data over the socket:
     //  socket descriptor
