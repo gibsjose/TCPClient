@@ -86,7 +86,8 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    printf("Received %d bytes from server: %s\n", n, (char *)response);
+    //printf("Received %d bytes from server: %s\n", n, (char *)response);
+    printf("Received %d bytes from server\n", n);
 
     //Close the socket
     close(sockfd);
