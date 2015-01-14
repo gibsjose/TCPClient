@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     //  MAX_BYTES
     //  optional settings
     //Returns the number of bytes received...
-    int n = recv(sockfd, response, 1024, 0);  //Receive is BLOCKING: Will wait for SOME data, but not necessarily until MAX_BYTES
+    int n = recv(sockfd, response, MAX_FILE_SIZE, 0);  //Receive is BLOCKING: Will wait for SOME data, but not necessarily until MAX_BYTES
 
     if(n < 0) {
         //Server has potentially closed the connection (check for specific error value)
