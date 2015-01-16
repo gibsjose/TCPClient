@@ -15,6 +15,9 @@
 
 #define MAX_FILE_SIZE (50 * 1024 * 1024)
 
+#define ERR_FILE_NOT_FOUND  0xE0
+#define ERR_FILE_TOO_LARGE  0xE1
+
 int main(int argc, char *argv[]) {
 
     FILE *local_file;
@@ -63,6 +66,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    //Obviously this is not an efficient way to do this...
     char * response = malloc(MAX_FILE_SIZE);
 
     //Send the data over the socket:
@@ -80,13 +84,26 @@ int main(int argc, char *argv[]) {
     //Returns the number of bytes received...
     int n = recv(sockfd, response, MAX_FILE_SIZE, 0);  //Receive is BLOCKING: Will wait for SOME data, but not necessarily until MAX_BYTES
 
+    //Error
     if(n <= 0) {
         //Server has potentially closed the connection (check for specific error value)
         printf("Error receiving bytes from server...\n");
         return -1;
     }
 
-    //printf("Received %d bytes from server: %s\n", n, (char *)response);
+    //If one byte was received, check to see if it was an error response
+    if(n == 1) {
+        if((unsigned char) *response == ERR_FILE_NOT_FOUND) {
+            printf("Error: Remote file does not exist\n");
+            return -1;
+        }
+
+        else if((unsigned char) *response == ERR_FILE_TOO_LARGE) {
+            printf("Error: The file requested exceeds the file limit of %d bytes", MAX_FILE_SIZE);
+            return -1;
+        }
+    }
+
     printf("Received %d bytes from server\n", n);
 
     //Close the socket
