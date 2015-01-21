@@ -1,4 +1,8 @@
-//Example client application
+//CIS 452 Lab 2 - TCP Client
+//Joe Gibson
+//Seth Hilaski
+//Adam Luckenbaugh
+//Raleigh Mumford
 
 #include <sys/socket.h> //Socket features
 #include <netinet/in.h> //Internet-specific features of sockets
@@ -9,7 +13,7 @@
 #include <unistd.h>
 #include <libgen.h>
 
-//Define the port and address
+//Define the default port and address
 #define PORT 8888
 #define ADDRESS "127.0.0.1"
 
@@ -18,8 +22,13 @@
 #define ERR_FILE_NOT_FOUND  0xE0
 #define ERR_FILE_TOO_LARGE  0xE1
 
+void ntrim(char *str);
+
 int main(int argc, char *argv[]) {
 
+    char port_str[16];
+    char address[64];
+    unsigned int port;
     FILE *local_file;
 
     //Create a socket:
@@ -34,12 +43,26 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
+    //Prompt user for server address and port
+    printf("Server address: ");
+    fgets(address, 64, stdin);
+    ntrim(address);
+
+    printf("Server port: ");
+    fgets(port_str, 16, stdin);
+    ntrim(port_str);
+    port = atoi(port_str);
+
+    printf("===========================================\n");
+    printf("Connecting to %s:%d\n", address, port);
+    printf("===========================================\n\n");
+
     //Specify the address for the socket
     //Create the socket address structure and populate it's fields
     struct sockaddr_in serveraddr;
     serveraddr.sin_family = AF_INET;                        //Specify the family again (AF_INET = internet family)
-    serveraddr.sin_port = htons(PORT);                      //Specify the port on which to send data (16-bit) (# < 1024 is off-limits)
-    serveraddr.sin_addr.s_addr = inet_addr(ADDRESS);        //Specify the IP address of the server with which to communicate
+    serveraddr.sin_port = htons(port);                      //Specify the port on which to send data (16-bit) (# < 1024 is off-limits)
+    serveraddr.sin_addr.s_addr = inet_addr(address);        //Specify the IP address of the server with which to communicate
                                                             //inet_addr() converts a string-address into the proper type
 
     //Open TCP "Connection"
@@ -47,7 +70,7 @@ int main(int argc, char *argv[]) {
     int e = connect(sockfd, (struct sockaddr *) &serveraddr, sizeof(struct sockaddr_in));
 
     if(e < 0) {
-        printf("Could not connect to server: %s:%d\n", ADDRESS, PORT);
+        printf("Could not connect to server: %s:%d\n", address, port);
         return -1;
     }
 
@@ -57,14 +80,7 @@ int main(int argc, char *argv[]) {
     printf("Specify a remote filepath: ");
     char remote_filepath[1024];
     fgets(remote_filepath, 1024, stdin);
-
-    //Remove the newline from the input
-    for(int i = 0; i < strlen(remote_filepath); i++) {
-        if(remote_filepath[i] == '\n') {
-            remote_filepath[i] = '\0';
-            break;
-        }
-    }
+    ntrim(remote_filepath);
 
     //Obviously this is not an efficient way to do this...
     char * response = malloc(MAX_FILE_SIZE);
@@ -129,4 +145,14 @@ int main(int argc, char *argv[]) {
     free(response);
 
     return 0;
+}
+
+//Trim the first newline character from the string
+void ntrim(char *str) {
+    for(int i = 0; i < strlen(str); i++) {
+        if(str[i] == '\n') {
+            str[i] = '\0';
+            break;
+        }
+    }
 }
